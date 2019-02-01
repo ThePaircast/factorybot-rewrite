@@ -28,6 +28,10 @@ require_relative "factory_bot/strategy/create"
 require_relative "factory_bot/strategy/stub"
 
 module FactoryBot
+  def self.definition_file_paths
+    @@definition_file_paths ||= []
+  end
+
   def self.use_parent_strategy=(strategy)
 
   end
@@ -41,9 +45,38 @@ module FactoryBot
   end
 
   def self.find_definitions
-    Dir.children("./spec/factories").each do |filename|
-      self.load(File.join(Dir.pwd, "spec", "factories", filename))
+    if File.exists? "./factories.rb"
+      self.load(File.join(Dir.pwd, "factories.rb"))
     end
+
+    if File.exists? "./test/factories.rb"
+      self.load(File.join(Dir.pwd, "test", "factories.rb"))
+    end
+
+    if Dir.exists? "./test/factories"
+      self.load_files_in_directory("test/factories")
+    end
+
+    if File.exists? "./spec/factories.rb"
+      self.load(File.join(Dir.pwd, "spec", "factories.rb"))
+    end
+
+    if Dir.exists? "./spec/factories"
+      self.load_files_in_directory("spec/factories")
+    end
+  end
+
+  def self.load_files_in_directory(directory)
+    Dir.children(directory).sort.each do |child|
+      path = File.join(Dir.pwd, directory, child)
+
+      if File.directory? path
+        load_files_in_directory(File.join(directory, child).to_s)
+      else
+        self.load(path)
+      end
+    end
+
   end
 
   def self.load(filename)
