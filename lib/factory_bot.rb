@@ -26,10 +26,30 @@ require_relative "factory_bot/strategy/attributes_for"
 require_relative "factory_bot/strategy/build"
 require_relative "factory_bot/strategy/create"
 require_relative "factory_bot/strategy/stub"
+require_relative "factory_bot/syntax"
+require_relative "factory_bot/syntax/methods"
+require_relative "factory_bot/factory_runner"
 
 module FactoryBot
+  def self.define
+  end
+
+  def self.register_factory(factory)
+  end
+
+  def self.build(model)
+    model.to_s.capitalize.constantize.new
+  end
+
+  def self.factory_by_name(something)
+    Factory.new
+  end
+
+  def self.create(name)
+  end
+
   def self.definition_file_paths
-    @@definition_file_paths ||= []
+    []
   end
 
   def self.use_parent_strategy=(strategy)
